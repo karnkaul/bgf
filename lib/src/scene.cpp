@@ -1,4 +1,5 @@
 #include <bave/scene.hpp>
+#include <bave/services/audio.hpp>
 #include <bave/services/display.hpp>
 #include <bave/services/scene_switcher.hpp>
 #include <algorithm>
@@ -57,6 +58,15 @@ auto Scene::pop_view() -> std::unique_ptr<ui::View> {
 	auto ret = std::move(m_views.back());
 	m_views.pop_back();
 	return ret;
+}
+
+void Scene::switch_track(std::string_view const uri, bool const force_restart) const {
+	auto& audio = get_services().get<IAudio>();
+	if (uri.empty()) {
+		audio.stop_music();
+	} else {
+		if (force_restart || audio.get_music_uri() != uri) { audio.play_music(uri); }
+	}
 }
 
 void Scene::tick_frame(Seconds const dt) {

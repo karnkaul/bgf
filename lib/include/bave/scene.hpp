@@ -23,8 +23,6 @@ class Scene : public EventSink {
 	void tick_frame(Seconds dt);
 	void render_frame() const;
 
-	[[nodiscard]] virtual auto get_music_uri() const -> std::string_view { return {}; }
-
 	[[nodiscard]] auto get_app() const -> App& { return m_app; }
 	[[nodiscard]] auto get_services() const -> Services const& { return m_services; }
 	[[nodiscard]] auto get_switcher() const -> ISceneSwitcher&;
@@ -35,6 +33,8 @@ class Scene : public EventSink {
 
 	void push_view(std::unique_ptr<ui::View> view);
 	auto pop_view() -> std::unique_ptr<ui::View>;
+
+	void switch_track(std::string_view uri, bool force_restart = false) const;
 
 	Rgba clear_colour{black_v};
 

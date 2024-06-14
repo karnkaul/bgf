@@ -17,6 +17,8 @@ class IAudio : public IService {
 	virtual void play_music(std::string_view uri, Seconds crossfade = 1s) = 0;
 	virtual void stop_music() = 0;
 
+	[[nodiscard]] virtual auto get_music_uri() const -> std::string_view = 0;
+
 	void play_any_sfx(std::span<std::string const> uris);
 };
 } // namespace bave

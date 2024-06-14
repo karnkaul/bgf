@@ -5,10 +5,24 @@
 
 namespace bave {
 class IAudio;
+class Resources;
 
 class GameDriver : public bave::Driver {
   public:
-	explicit GameDriver(bave::App& app);
+	struct CreateInfo {
+		struct Assets {
+			struct {
+				std::string_view uri{"fonts/main.ttf"};
+				std::span<TextHeight const> preload_heights{};
+			} main_font{};
+			std::string_view spinner{"images/spinner.png"};
+			std::string_view styles{"styles.json"};
+		};
+
+		Assets assets{};
+	};
+
+	explicit GameDriver(bave::App& app, CreateInfo const& create_info);
 
   protected:
 	void on_focus(bave::FocusChange const& focus_change) override;
@@ -24,9 +38,8 @@ class GameDriver : public bave::Driver {
 	void tick() override;
 	void render() const override;
 
-	void switch_track(std::string_view from, std::string_view to) const;
-
 	[[nodiscard]] auto get_switcher() const -> ISceneSwitcher& { return m_services.get<ISceneSwitcher>(); }
+	[[nodiscard]] auto make_loader() const -> Loader { return Loader{&get_app().get_data_store(), &get_app().get_render_device()}; }
 
 	Services m_services;
 
@@ -34,9 +47,13 @@ class GameDriver : public bave::Driver {
 	struct SceneSwitcher;
 	struct Display;
 
-	bave::Ptr<SceneSwitcher> m_switcher{};
-	bave::Ptr<Display> m_display{};
-	bave::Ptr<IAudio> m_audio{};
+	void load_resources(CreateInfo::Assets const& assets);
+	void bind_services();
+
+	Ptr<SceneSwitcher> m_switcher{};
+	Ptr<Resources> m_resources{};
+	Ptr<Display> m_display{};
+	Ptr<IAudio> m_audio{};
 
 	std::unique_ptr<Scene> m_scene{};
 };
