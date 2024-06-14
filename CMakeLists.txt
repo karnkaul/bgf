@@ -17,6 +17,6 @@ if(NOT TARGET bave)
   FetchContent_MakeAvailable(bave)
 endif()
 
-project(bgf VERSION 0.1.0)
+project(bgf VERSION 0.1.2)
 
 add_subdirectory(lib)

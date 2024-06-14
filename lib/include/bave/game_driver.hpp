@@ -7,7 +7,7 @@ namespace bave {
 class IAudio;
 class Resources;
 
-class GameDriver : public bave::Driver {
+class GameDriver : public Driver {
   public:
 	struct CreateInfo {
 		struct Assets {
@@ -22,17 +22,17 @@ class GameDriver : public bave::Driver {
 		Assets assets{};
 	};
 
-	explicit GameDriver(bave::App& app, CreateInfo const& create_info);
+	explicit GameDriver(App& app, CreateInfo const& create_info);
 
   protected:
-	void on_focus(bave::FocusChange const& focus_change) override;
-	void on_resize(bave::WindowResize const& window_resize) override;
-	void on_resize(bave::FramebufferResize const& framebuffer_resize) override;
-	void on_key(bave::KeyInput const& key_input) override;
-	void on_char(bave::CharInput const& char_input) override;
-	void on_tap(bave::PointerTap const& pointer_tap) override;
-	void on_move(bave::PointerMove const& pointer_move) override;
-	void on_scroll(bave::MouseScroll const& mouse_scroll) override;
+	void on_focus(FocusChange const& focus_change) override;
+	void on_resize(WindowResize const& window_resize) override;
+	void on_resize(FramebufferResize const& framebuffer_resize) override;
+	void on_key(KeyInput const& key_input) override;
+	void on_char(CharInput const& char_input) override;
+	void on_tap(PointerTap const& pointer_tap) override;
+	void on_move(PointerMove const& pointer_move) override;
+	void on_scroll(MouseScroll const& mouse_scroll) override;
 	void on_drop(std::span<std::string const> paths) override;
 
 	void tick() override;
@@ -42,6 +42,7 @@ class GameDriver : public bave::Driver {
 	[[nodiscard]] auto make_loader() const -> Loader { return Loader{&get_app().get_data_store(), &get_app().get_render_device()}; }
 
 	Services m_services;
+	InclusiveRange<Seconds> m_dt_limit{0s, 1s};
 
   private:
 	struct SceneSwitcher;

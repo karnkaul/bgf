@@ -6,21 +6,6 @@
 #include <bave/ui/dialog.hpp>
 
 namespace bave {
-using bave::App;
-using bave::AudioClip;
-using bave::AudioDevice;
-using bave::AudioStreamer;
-using bave::FocusChange;
-using bave::KeyInput;
-using bave::MouseScroll;
-using bave::NotNull;
-using bave::PointerMove;
-using bave::PointerTap;
-using bave::Rect;
-using bave::RenderDevice;
-using bave::RenderView;
-using bave::Seconds;
-
 namespace {
 struct Audio : IAudio {
 	NotNull<AudioDevice*> audio_device;
@@ -88,9 +73,11 @@ struct GameDriver::Display : IDisplay {
 	[[nodiscard]] auto project_to_world(glm::vec2 fb_point) const -> glm::vec2 final { return render_device->project_to(get_world_space(), fb_point); }
 
 	[[nodiscard]] auto unproject(glm::vec2 const pointer) const -> glm::vec2 final {
-		if (!bave::is_positive(framebuffer_size)) { return pointer; }
+		if (!is_positive(framebuffer_size)) { return pointer; }
 		return main_view.unproject(pointer / framebuffer_size);
 	}
+
+	void set_world_space(glm::vec2 const size) final { main_view.viewport = size; }
 };
 
 GameDriver::GameDriver(App& app, CreateInfo const& create_info) : Driver(app), m_scene(std::make_unique<EmptyScene>(app, m_services)) {
@@ -100,13 +87,13 @@ GameDriver::GameDriver(App& app, CreateInfo const& create_info) : Driver(app), m
 
 void GameDriver::on_focus(FocusChange const& focus_change) { m_scene->on_focus_event(focus_change); }
 
-void GameDriver::on_resize(bave::WindowResize const& window_resize) { m_scene->on_resize(window_resize); }
+void GameDriver::on_resize(WindowResize const& window_resize) { m_scene->on_resize(window_resize); }
 
-void GameDriver::on_resize(bave::FramebufferResize const& framebuffer_resize) { m_scene->on_resize(framebuffer_resize); }
+void GameDriver::on_resize(FramebufferResize const& framebuffer_resize) { m_scene->on_resize(framebuffer_resize); }
 
 void GameDriver::on_key(KeyInput const& key_input) { m_scene->on_key_event(key_input); }
 
-void GameDriver::on_char(bave::CharInput const& char_input) { m_scene->on_char(char_input); }
+void GameDriver::on_char(CharInput const& char_input) { m_scene->on_char(char_input); }
 
 void GameDriver::on_tap(PointerTap const& pointer_tap) { m_scene->on_tap_event(pointer_tap); }
 
@@ -125,7 +112,8 @@ void GameDriver::tick() {
 		m_scene->start_loading();
 	}
 
-	m_scene->tick_frame(get_app().get_dt());
+	auto const dt = std::clamp(get_app().get_dt(), m_dt_limit.lo, m_dt_limit.hi);
+	m_scene->tick_frame(dt);
 
 	clear_colour = m_scene->clear_colour;
 }
