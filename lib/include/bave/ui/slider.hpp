@@ -16,6 +16,8 @@ class Slider : public IWidget {
 	[[nodiscard]] auto get_position() const -> glm::vec2 final { return m_progress_bar.get_position(); }
 	void set_position(glm::vec2 position) final;
 
+	void set_progress_bar_size(glm::vec2 size);
+
 	[[nodiscard]] auto get_value() const -> float { return m_value; }
 	void set_value(float value);
 

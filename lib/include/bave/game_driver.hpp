@@ -5,7 +5,7 @@
 
 namespace bave {
 class IAudio;
-class Resources;
+struct Resources;
 
 class GameDriver : public Driver {
   public:
@@ -43,6 +43,7 @@ class GameDriver : public Driver {
 
 	Services m_services;
 	InclusiveRange<Seconds> m_dt_limit{0s, 1s};
+	bool m_use_default_view_for_ui{true};
 
   private:
 	struct SceneSwitcher;

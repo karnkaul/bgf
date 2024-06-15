@@ -5,7 +5,10 @@
 #include <algorithm>
 
 namespace bave {
-Scene::Scene(App& app, Services const& services, std::string name) : m_log{std::move(name)}, m_app(app), m_services(services) { m_log.info("constructed"); }
+Scene::Scene(App& app, Services const& services, std::string name)
+	: m_log{std::move(name)}, m_app(app), m_services(services), m_display(services.get<IDisplay>()) {
+	m_log.info("constructed");
+}
 
 void Scene::start_loading() {
 	auto stages = build_load_stages();
@@ -27,14 +30,32 @@ void Scene::on_focus_event(FocusChange const& focus_change) { on_focus(focus_cha
 
 void Scene::on_move_event(PointerMove const& pointer_move) {
 	if (is_loading()) { return; }
-	if (on_ui_event([pointer_move](ui::View& view) { view.on_move(pointer_move); })) { return; }
-	on_move(pointer_move);
+
+	auto const func = [pointer_move](ui::View& view) {
+		auto pm = pointer_move;
+		pm.pointer.position = view.unproject(pointer_move.pointer.position);
+		view.on_move(pm);
+	};
+	if (on_ui_event(func)) { return; }
+
+	auto pm = pointer_move;
+	pm.pointer.position = m_display.unproject_to_world(pointer_move.pointer.position);
+	on_move(pm);
 }
 
 void Scene::on_tap_event(PointerTap const& pointer_tap) {
 	if (is_loading()) { return; }
-	if (on_ui_event([pointer_tap](ui::View& view) { view.on_tap(pointer_tap); })) { return; }
-	on_tap(pointer_tap);
+
+	auto const func = [pointer_tap](ui::View& view) {
+		auto pt = pointer_tap;
+		pt.pointer.position = view.unproject(pointer_tap.pointer.position);
+		view.on_tap(pt);
+	};
+	if (on_ui_event(func)) { return; }
+
+	auto pt = pointer_tap;
+	pt.pointer.position = m_display.unproject_to_world(pointer_tap.pointer.position);
+	on_tap(pt);
 }
 
 void Scene::on_scroll_event(MouseScroll const& mouse_scroll) {
@@ -81,8 +102,14 @@ void Scene::render_frame() const {
 	auto shader = get_app().load_shader("shaders/default.vert", "shaders/default.frag");
 	if (!shader) { return; }
 	if (render_loading(*shader)) { return; }
+
+	shader->set_render_view(m_display.get_world_view());
 	render(*shader);
-	for (auto const& view : m_views) { view->render(*shader); }
+
+	for (auto const& view : m_views) {
+		shader->set_render_view(view->render_view.value_or(m_display.get_ui_view()));
+		view->render(*shader);
+	}
 }
 
 template <typename F>

@@ -56,8 +56,7 @@ void Button::set_style(Style const& style) {
 
 void Button::on_move(PointerMove const& pointer_move) {
 	if (pointer_move.pointer.id != PointerId::ePrimary) { return; }
-	auto const position = m_display->unproject(pointer_move.pointer.position);
-	if (m_hitbox.contains(position)) {
+	if (m_hitbox.contains(pointer_move.pointer.position)) {
 		m_state = State::eHover;
 	} else {
 		m_state = State::eIdle;
@@ -67,8 +66,7 @@ void Button::on_move(PointerMove const& pointer_move) {
 void Button::on_tap(PointerTap const& pointer_tap) {
 	if (pointer_tap.pointer.id != PointerId::ePrimary || pointer_tap.button != MouseButton::eLeft) { return; }
 
-	auto const position = m_display->unproject(pointer_tap.pointer.position);
-	if (!m_hitbox.contains(position)) {
+	if (!m_hitbox.contains(pointer_tap.pointer.position)) {
 		m_state = State::eIdle;
 		return;
 	}

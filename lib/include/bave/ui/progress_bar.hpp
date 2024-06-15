@@ -11,7 +11,7 @@ class ProgressBar : public IElement {
 
 	explicit ProgressBar(Services const& services);
 
-	glm::vec2 size{200.0f, 20.0f};
+	glm::vec2 size{300.0f, 35.0f};
 	glm::vec2 position{};
 
 	void draw(Shader& shader) const final;

@@ -49,7 +49,7 @@ struct DialogStyle {
 
 struct SliderStyle {
 	std::string progress_bar{};
-	float knob_diameter{30.0f};
+	float knob_diameter{50.0f};
 	Rgba knob_tint{white_v};
 };
 } // namespace bave::ui
