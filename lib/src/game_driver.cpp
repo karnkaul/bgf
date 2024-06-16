@@ -60,7 +60,7 @@ struct GameDriver::SceneSwitcher : ISceneSwitcher {
 struct GameDriver::Display : IDisplay {
 	NotNull<RenderDevice const*> render_device;
 	RenderView world_view{};
-	RenderView ui_view{};
+	RenderView default_view{};
 	glm::vec2 window_size{};
 	glm::vec2 framebuffer_size{};
 
@@ -72,10 +72,9 @@ struct GameDriver::Display : IDisplay {
 	[[nodiscard]] auto get_framebuffer_size() const -> glm::vec2 final { return framebuffer_size; }
 
 	[[nodiscard]] auto get_world_view() const -> RenderView const& final { return world_view; }
-	[[nodiscard]] auto get_ui_view() const -> RenderView const& final { return ui_view; }
+	[[nodiscard]] auto get_default_view() const -> RenderView const& final { return default_view; }
 
 	void set_world_space(glm::vec2 const size) final { world_view.viewport = size; }
-	void set_ui_space(glm::vec2 const size) final { ui_view.viewport = size; }
 };
 
 GameDriver::GameDriver(App& app, CreateInfo const& create_info) : Driver(app) {
@@ -105,7 +104,7 @@ void GameDriver::on_drop(std::span<std::string const> paths) { m_scene->on_drop(
 void GameDriver::tick() {
 	m_display->window_size = get_app().get_window_size();
 	m_display->framebuffer_size = get_app().get_framebuffer_size();
-	if (m_use_default_view_for_ui) { m_display->ui_view = get_app().get_render_device().get_default_view(); }
+	m_display->default_view = get_app().get_render_device().get_default_view();
 
 	if (m_switcher->next_scene) {
 		m_scene = std::move(m_switcher->next_scene);
@@ -140,7 +139,7 @@ void GameDriver::bind_services() {
 	auto display = std::make_unique<Display>(&get_app().get_render_device());
 	m_display = display.get();
 	m_display->framebuffer_size = get_app().get_framebuffer_size();
-	m_display->ui_view = m_display->world_view = get_app().get_render_device().get_default_view();
+	m_display->default_view = m_display->world_view = get_app().get_render_device().get_default_view();
 	m_services.bind<IDisplay>(std::move(display));
 
 	auto switcher = std::make_unique<SceneSwitcher>(get_app(), m_services);

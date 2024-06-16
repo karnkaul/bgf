@@ -5,16 +5,16 @@
 namespace bave::ui {
 LoadingScreen::LoadingScreen(Services const& services)
 	: m_display(&services.get<IDisplay>()), m_style(services.get<Styles>().loading_screen), m_progress_bar(services) {
-	auto const world_space = m_display->get_ui_view().viewport;
+	auto const space = m_display->get_default_space();
 
-	m_background.set_size(1.1f * world_space);
+	m_background.set_size(1.1f * space);
 	m_background.tint = m_style.background_tint;
 
 	m_spinner.set_size(m_style.spinner.size);
 	m_spinner.set_texture(services.get<Resources>().spinner);
 
-	m_progress_bar.size = {m_style.progress_bar.n_width * world_space.x, m_style.progress_bar.height};
-	m_progress_bar.position.y = -0.5f * world_space.y + m_style.progress_bar.bottom_offset;
+	m_progress_bar.size = {m_style.progress_bar.n_width * space.x, m_style.progress_bar.height};
+	m_progress_bar.position.y = -0.5f * space.y + m_style.progress_bar.bottom_offset;
 	auto style = m_progress_bar.get_style();
 	style.padding = m_style.progress_bar.padding;
 	m_progress_bar.set_style(style);
@@ -29,7 +29,7 @@ void LoadingScreen::update(Seconds const dt, float const progress) {
 }
 
 void LoadingScreen::draw(Shader& shader) const {
-	shader.set_render_view(m_display->get_ui_view());
+	shader.set_render_view(m_display->get_default_view());
 	m_background.draw(shader);
 	m_spinner.draw(shader);
 	m_progress_bar.draw(shader);

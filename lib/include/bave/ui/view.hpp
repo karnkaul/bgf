@@ -16,7 +16,7 @@ class View : public Polymorphic {
 	[[nodiscard]] auto is_destroyed() const -> bool { return m_destroyed; }
 	void set_destroyed() { m_destroyed = true; }
 
-	[[nodiscard]] auto unproject(glm::vec2 const pointer) const { return m_display->unproject(render_view.value_or(m_display->get_ui_view()), pointer); }
+	[[nodiscard]] auto unproject(glm::vec2 const pointer) const { return m_display->unproject(render_view.value_or(m_display->get_default_view()), pointer); }
 
 	virtual void on_move(PointerMove const& pointer_move);
 	virtual void on_tap(PointerTap const& pointer_tap);

@@ -26,7 +26,10 @@ void Scene::on_key_event(KeyInput const& key_input) {
 	on_key(key_input);
 }
 
-void Scene::on_focus_event(FocusChange const& focus_change) { on_focus(focus_change); }
+void Scene::on_focus_event(FocusChange const& focus_change) {
+	if (is_loading()) { return; }
+	on_focus(focus_change);
+}
 
 void Scene::on_move_event(PointerMove const& pointer_move) {
 	if (is_loading()) { return; }
@@ -107,7 +110,7 @@ void Scene::render_frame() const {
 	render(*shader);
 
 	for (auto const& view : m_views) {
-		shader->set_render_view(view->render_view.value_or(m_display.get_ui_view()));
+		shader->set_render_view(view->render_view.value_or(m_display.get_default_view()));
 		view->render(*shader);
 	}
 }
