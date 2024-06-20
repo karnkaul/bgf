@@ -1,4 +1,5 @@
 #pragma once
+#include <bave/audio/audio_device.hpp>
 #include <bave/core/time.hpp>
 #include <bave/services/service.hpp>
 #include <span>
@@ -7,6 +8,8 @@
 namespace bave {
 class IAudio : public IService {
   public:
+	[[nodiscard]] virtual auto get_audio_device() const -> AudioDevice& = 0;
+
 	[[nodiscard]] virtual auto get_sfx_gain() const -> float = 0;
 	virtual void set_sfx_gain(float gain) = 0;
 

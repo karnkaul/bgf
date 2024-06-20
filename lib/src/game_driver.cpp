@@ -16,6 +16,8 @@ struct Audio : IAudio {
 	explicit Audio(NotNull<AudioDevice*> audio_device, NotNull<AudioStreamer*> audio_streamer, NotNull<Resources const*> resources)
 		: audio_device(audio_device), audio_streamer(audio_streamer), resources(resources) {}
 
+	[[nodiscard]] auto get_audio_device() const -> AudioDevice& final { return *audio_device; }
+
 	[[nodiscard]] auto get_sfx_gain() const -> float final { return audio_device->sfx_gain; }
 	void set_sfx_gain(float const gain) final { audio_device->sfx_gain = gain; }
 

@@ -1,5 +1,6 @@
 #pragma once
 #include <bave/app.hpp>
+#include <bave/assets/asset_manifest.hpp>
 #include <bave/async_exec.hpp>
 #include <bave/core/polymorphic.hpp>
 #include <bave/input/event_sink.hpp>
@@ -13,16 +14,6 @@ class ISceneSwitcher;
 
 class Scene : public EventSink {
   public:
-	void start_loading();
-
-	void on_focus_event(FocusChange const& focus_change);
-	void on_key_event(KeyInput const& key_input);
-	void on_move_event(PointerMove const& pointer_move);
-	void on_tap_event(PointerTap const& pointer_tap);
-	void on_scroll_event(MouseScroll const& mouse_scroll);
-	void tick_frame(Seconds dt);
-	void render_frame() const;
-
 	[[nodiscard]] auto get_app() const -> App& { return m_app; }
 	[[nodiscard]] auto get_services() const -> Services const& { return m_services; }
 	[[nodiscard]] auto get_switcher() const -> ISceneSwitcher&;
@@ -41,13 +32,18 @@ class Scene : public EventSink {
   protected:
 	explicit Scene(App& app, Services const& services, std::string name);
 
-	virtual auto build_load_stages() -> std::vector<AsyncExec::Stage> { return {}; }
+	virtual void start_loading();
+	virtual auto get_asset_manifest() -> AssetManifest { return {}; }
 	virtual void on_loaded() {}
 
 	virtual void tick(Seconds /*dt*/) {}
 	virtual void render(Shader& /*shader*/) const {}
 
 	Logger m_log{};
+	struct {
+		std::string_view vert{"shaders/default.vert"};
+		std::string_view frag{"shaders/default.frag"};
+	} m_shader{};
 
   private:
 	template <typename F>
@@ -58,6 +54,14 @@ class Scene : public EventSink {
 	void update_loading(Seconds dt);
 	auto render_loading(Shader& shader) const -> bool;
 
+	void on_focus_event(FocusChange const& focus_change);
+	void on_key_event(KeyInput const& key_input);
+	void on_move_event(PointerMove const& pointer_move);
+	void on_tap_event(PointerTap const& pointer_tap);
+	void on_scroll_event(MouseScroll const& mouse_scroll);
+	void tick_frame(Seconds dt);
+	void render_frame() const;
+
 	App& m_app;
 	Services const& m_services;
 	IDisplay const& m_display;
@@ -66,6 +70,8 @@ class Scene : public EventSink {
 
 	std::optional<AsyncExec> m_load{};
 	std::optional<ui::LoadingScreen> m_loading_screen{};
+
+	friend class GameDriver;
 };
 
 class EmptyScene : public Scene {
