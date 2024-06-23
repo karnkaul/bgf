@@ -46,7 +46,6 @@ class GameDriver : public Driver {
 
   private:
 	struct SceneSwitcher;
-	struct Display;
 
 	void load_resources(CreateInfo::Assets const& assets);
 	void bind_services();

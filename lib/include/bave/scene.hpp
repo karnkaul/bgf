@@ -64,7 +64,7 @@ class Scene : public EventSink {
 
 	App& m_app;
 	Services const& m_services;
-	IDisplay const& m_display;
+	Display const& m_display;
 	std::vector<std::unique_ptr<ui::View>> m_views{};
 	std::vector<Ptr<ui::View>> m_cached_views{};
 

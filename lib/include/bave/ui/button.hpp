@@ -47,7 +47,6 @@ class Button : public IWidget {
 	void resize_background();
 	void reposition_text();
 
-	NotNull<IDisplay const*> m_display;
 	NotNull<Styles const*> m_styles;
 
 	OutlineQuad m_background{};

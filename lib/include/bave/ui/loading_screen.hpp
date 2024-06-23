@@ -14,7 +14,7 @@ class LoadingScreen {
 	void draw(Shader& shader) const;
 
   private:
-	NotNull<IDisplay const*> m_display;
+	NotNull<VectorSpace const*> m_ui_space;
 	LoadingScreenStyle m_style{};
 	Sprite m_background{};
 	Sprite m_spinner{};

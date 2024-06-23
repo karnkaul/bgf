@@ -4,8 +4,8 @@
 
 namespace bave::ui {
 LoadingScreen::LoadingScreen(Services const& services)
-	: m_display(&services.get<IDisplay>()), m_style(services.get<Styles>().loading_screen), m_progress_bar(services) {
-	auto const space = m_display->get_default_space();
+	: m_ui_space(&services.get<Display>().ui), m_style(services.get<Styles>().loading_screen), m_progress_bar(services) {
+	auto const space = m_ui_space->get_size();
 
 	m_background.set_size(1.1f * space);
 	m_background.tint = m_style.background_tint;
@@ -29,7 +29,7 @@ void LoadingScreen::update(Seconds const dt, float const progress) {
 }
 
 void LoadingScreen::draw(Shader& shader) const {
-	shader.set_render_view(m_display->get_default_view());
+	shader.set_render_view(m_ui_space->render_view);
 	m_background.draw(shader);
 	m_spinner.draw(shader);
 	m_progress_bar.draw(shader);

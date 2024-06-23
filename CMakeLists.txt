@@ -10,13 +10,13 @@ if(NOT TARGET bave)
   FetchContent_Declare(
     bave
     GIT_REPOSITORY https://github.com/karnkaul/bave
-    GIT_TAG v0.5.5
+    GIT_TAG v0.5.6
     SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext/bave"
   )
 
   FetchContent_MakeAvailable(bave)
 endif()
 
-project(bgf VERSION 0.1.5)
+project(bgf VERSION 0.1.6)
 
 add_subdirectory(lib)

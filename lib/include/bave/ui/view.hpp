@@ -16,7 +16,7 @@ class View : public Polymorphic {
 	[[nodiscard]] auto is_destroyed() const -> bool { return m_destroyed; }
 	void set_destroyed() { m_destroyed = true; }
 
-	[[nodiscard]] auto unproject(glm::vec2 const pointer) const { return m_display->unproject(render_view.value_or(m_display->get_default_view()), pointer); }
+	[[nodiscard]] auto unproject(glm::vec2 const pointer) const { return m_ui_space->unproject(render_view.value_or(m_ui_space->render_view), pointer); }
 
 	virtual void on_move(PointerMove const& pointer_move);
 	virtual void on_tap(PointerTap const& pointer_tap);
@@ -30,7 +30,7 @@ class View : public Polymorphic {
   protected:
 	std::vector<std::unique_ptr<ui::IElement>> m_elements{};
 	std::vector<Ptr<ui::IWidget>> m_widgets{};
-	NotNull<IDisplay const*> m_display;
+	NotNull<VectorSpace const*> m_ui_space;
 	bool m_destroyed{};
 };
 } // namespace bave::ui

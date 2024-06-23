@@ -7,7 +7,7 @@
 
 namespace bave {
 Scene::Scene(App& app, Services const& services, std::string name)
-	: m_log{std::move(name)}, m_app(app), m_services(services), m_display(services.get<IDisplay>()) {
+	: m_log{std::move(name)}, m_app(app), m_services(services), m_display(services.get<Display>()) {
 	m_log.info("constructed");
 }
 
@@ -116,7 +116,7 @@ void Scene::on_move_event(PointerMove const& pointer_move) {
 	if (on_ui_event(func)) { return; }
 
 	auto pm = pointer_move;
-	pm.pointer.position = m_display.unproject_to_world(pointer_move.pointer.position);
+	pm.pointer.position = m_display.world.unproject(pointer_move.pointer.position);
 	on_move(pm);
 }
 
@@ -131,7 +131,7 @@ void Scene::on_tap_event(PointerTap const& pointer_tap) {
 	if (on_ui_event(func)) { return; }
 
 	auto pt = pointer_tap;
-	pt.pointer.position = m_display.unproject_to_world(pointer_tap.pointer.position);
+	pt.pointer.position = m_display.world.unproject(pointer_tap.pointer.position);
 	on_tap(pt);
 }
 
@@ -153,11 +153,11 @@ void Scene::render_frame() const {
 	if (!shader) { return; }
 	if (render_loading(*shader)) { return; }
 
-	shader->set_render_view(m_display.get_world_view());
+	shader->set_render_view(m_display.world.render_view);
 	render(*shader);
 
 	for (auto const& view : m_views) {
-		shader->set_render_view(view->render_view.value_or(m_display.get_default_view()));
+		shader->set_render_view(view->render_view.value_or(m_display.ui.render_view));
 		view->render(*shader);
 	}
 }

@@ -5,7 +5,7 @@
 #include <algorithm>
 
 namespace bave::ui {
-Button::Button(Services const& services) : m_display(&services.get<IDisplay>()), m_styles(&services.get<Styles>()) {
+Button::Button(Services const& services) : m_styles(&services.get<Styles>()) {
 	m_text.set_font(services.get<Resources>().main_font);
 	set_text_height(TextHeight::eDefault);
 	set_style(m_styles->buttons["default"]);
