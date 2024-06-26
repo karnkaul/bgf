@@ -36,7 +36,7 @@ struct ProgressBarStyle {
 	Rgba background{white_v};
 	Rgba fill{yellow_v};
 	float corner_ratio{0.5f};
-	float padding{10.0f};
+	float padding{20.0f};
 };
 
 struct DialogStyle {

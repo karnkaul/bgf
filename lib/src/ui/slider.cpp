@@ -19,10 +19,7 @@ void Slider::set_position(glm::vec2 const position) {
 	set_value(m_value);
 }
 
-void Slider::set_progress_bar_size(glm::vec2 const size) {
-	m_progress_bar.size = size;
-	m_progress_bar.set_progress(m_value);
-}
+void Slider::set_progress_bar_size(glm::vec2 const size) { m_progress_bar.set_size(size); }
 
 void Slider::set_value(float const value) {
 	update_value(std::clamp(value, 0.0f, 1.0f));

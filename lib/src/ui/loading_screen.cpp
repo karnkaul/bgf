@@ -13,8 +13,8 @@ LoadingScreen::LoadingScreen(Services const& services)
 	m_spinner.set_size(m_style.spinner.size);
 	m_spinner.set_texture(services.get<Resources>().spinner);
 
-	m_progress_bar.size = {m_style.progress_bar.n_width * space.x, m_style.progress_bar.height};
-	m_progress_bar.position.y = -0.5f * space.y + m_style.progress_bar.bottom_offset;
+	m_progress_bar.set_size({m_style.progress_bar.n_width * space.x, m_style.progress_bar.height});
+	m_progress_bar.set_position({0.0f, -0.5f * space.y + m_style.progress_bar.bottom_offset});
 	auto style = m_progress_bar.get_style();
 	style.padding = m_style.progress_bar.padding;
 	m_progress_bar.set_style(style);
