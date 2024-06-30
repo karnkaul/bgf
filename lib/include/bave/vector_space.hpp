@@ -17,9 +17,7 @@ class VectorSpace {
 	[[nodiscard]] auto get_size() const -> glm::vec2 { return render_view.viewport; }
 
 	[[nodiscard]] auto project(glm::vec2 fb_point) const -> glm::vec2;
-	[[nodiscard]] auto unproject(glm::vec2 pointer) const -> glm::vec2 { return unproject(render_view, pointer); }
-
-	[[nodiscard]] auto unproject(RenderView const& render_view, glm::vec2 pointer) const -> glm::vec2;
+	[[nodiscard]] auto unproject(glm::vec2 pointer) const -> glm::vec2;
 
 	void sync_to_default_view();
 

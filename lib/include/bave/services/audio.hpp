@@ -17,8 +17,8 @@ class IAudio : public IService {
 	virtual void set_music_gain(float gain) = 0;
 
 	virtual void play_sfx(std::string_view uri) = 0;
-	virtual void play_music(std::string_view uri, Seconds crossfade = 1s) = 0;
-	virtual void stop_music() = 0;
+	virtual void play_music(std::string_view uri, Seconds cross_fade = 1s) = 0;
+	virtual void stop_music(Seconds fadeout = 0s) = 0;
 
 	[[nodiscard]] virtual auto get_music_uri() const -> std::string_view = 0;
 

@@ -1,8 +1,6 @@
 #include <bave/ui/view.hpp>
 
 namespace bave::ui {
-View::View(Services const& services) : m_ui_space(&services.get<Display>().ui) {}
-
 void View::push(std::unique_ptr<IElement> element) {
 	if (!element) { return; }
 	m_elements.push_back(std::move(element));

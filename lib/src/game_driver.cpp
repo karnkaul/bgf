@@ -11,6 +11,7 @@ struct Audio : IAudio {
 	NotNull<AudioDevice*> audio_device;
 	NotNull<AudioStreamer*> audio_streamer;
 	NotNull<Resources const*> resources;
+	std::string_view interact_sfx_uri{};
 	std::string music_uri{};
 
 	explicit Audio(NotNull<AudioDevice*> audio_device, NotNull<AudioStreamer*> audio_streamer, NotNull<Resources const*> resources)
@@ -30,17 +31,18 @@ struct Audio : IAudio {
 		audio_device->play_once(*clip);
 	}
 
-	void play_music(std::string_view const uri, Seconds const crossfade) final {
+	void play_music(std::string_view const uri, Seconds const cross_fade) final {
 		auto const clip = resources->get<AudioClip>(uri);
 		if (!clip) {
-			stop_music();
+			stop_music(cross_fade);
+			music_uri.clear();
 			return;
 		}
 		music_uri = std::string{uri};
-		audio_streamer->play(clip, crossfade);
+		audio_streamer->play(clip, cross_fade);
 	}
 
-	void stop_music() final { audio_streamer->stop(); }
+	void stop_music(Seconds const fadeout) final { audio_streamer->stop(fadeout); }
 
 	[[nodiscard]] auto get_music_uri() const -> std::string_view final { return music_uri; }
 };
@@ -61,7 +63,7 @@ struct GameDriver::SceneSwitcher : ISceneSwitcher {
 
 GameDriver::GameDriver(App& app, CreateInfo const& create_info) : Driver(app) {
 	load_resources(create_info.assets);
-	bind_services();
+	bind_services(create_info.assets.interact_sfx);
 	m_scene = std::make_unique<EmptyScene>(app, m_services);
 }
 
@@ -108,6 +110,7 @@ void GameDriver::load_resources(CreateInfo::Assets const& assets) {
 	preload_heights.push_back(ui::Dialog::text_height_v);
 	resources->main_font = loader.load_font(assets.main_font.uri, preload_heights);
 	resources->spinner = loader.load_texture(assets.spinner, true);
+	resources->interact_sfx = loader.load_audio_clip(assets.interact_sfx);
 	m_services.bind<Resources>(std::move(resources));
 
 	auto styles = std::make_unique<Styles>();
@@ -115,7 +118,7 @@ void GameDriver::load_resources(CreateInfo::Assets const& assets) {
 	m_services.bind<Styles>(std::move(styles));
 }
 
-void GameDriver::bind_services() {
+void GameDriver::bind_services(std::string_view const interact_sfx_uri) {
 	auto display = std::make_unique<Display>(&get_app().get_render_device());
 	m_display = display.get();
 	m_services.bind<Display>(std::move(display));
@@ -125,6 +128,7 @@ void GameDriver::bind_services() {
 	m_services.bind<ISceneSwitcher>(std::move(switcher));
 
 	auto audio = std::make_unique<Audio>(&get_app().get_audio_device(), &get_app().get_audio_streamer(), &m_services.get<Resources>());
+	audio->interact_sfx_uri = interact_sfx_uri;
 	m_audio = audio.get();
 	m_services.bind<IAudio>(std::move(audio));
 }
