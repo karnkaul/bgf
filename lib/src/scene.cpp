@@ -108,9 +108,11 @@ void Scene::on_focus_event(FocusChange const& focus_change) {
 void Scene::on_move_event(PointerMove const& pointer_move) {
 	if (is_loading()) { return; }
 
-	auto const func = [pointer_move](ui::View& view) {
+	auto const& render_device = get_app().get_render_device();
+	auto const& ui_view = m_display.ui.render_view;
+	auto const func = [pointer_move, &render_device, &ui_view](ui::View& view) {
 		auto pm = pointer_move;
-		pm.pointer.position = view.unproject(pointer_move.pointer.position);
+		pm.pointer.position = render_device.unproject_to(view.render_view.value_or(ui_view), pointer_move.pointer.position);
 		view.on_move(pm);
 	};
 	if (on_ui_event(func)) { return; }
@@ -123,9 +125,11 @@ void Scene::on_move_event(PointerMove const& pointer_move) {
 void Scene::on_tap_event(PointerTap const& pointer_tap) {
 	if (is_loading()) { return; }
 
-	auto const func = [pointer_tap](ui::View& view) {
+	auto const& render_device = get_app().get_render_device();
+	auto const& ui_view = m_display.ui.render_view;
+	auto const func = [pointer_tap, &render_device, &ui_view](ui::View& view) {
 		auto pt = pointer_tap;
-		pt.pointer.position = view.unproject(pointer_tap.pointer.position);
+		pt.pointer.position = render_device.unproject_to(view.render_view.value_or(ui_view), pointer_tap.pointer.position);
 		view.on_tap(pt);
 	};
 	if (on_ui_event(func)) { return; }

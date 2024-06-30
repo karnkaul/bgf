@@ -17,6 +17,7 @@ class GameDriver : public Driver {
 			} main_font{};
 			std::string_view spinner{"images/spinner.png"};
 			std::string_view styles{"styles.json"};
+			std::string_view interact_sfx{"sfx/interact.wav"};
 		};
 
 		Assets assets{};
@@ -48,7 +49,7 @@ class GameDriver : public Driver {
 	struct SceneSwitcher;
 
 	void load_resources(CreateInfo::Assets const& assets);
-	void bind_services();
+	void bind_services(std::string_view interact_sfx_uri);
 
 	Ptr<SceneSwitcher> m_switcher{};
 	Ptr<Resources> m_resources{};

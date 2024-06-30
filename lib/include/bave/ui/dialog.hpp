@@ -29,7 +29,7 @@ class Dialog : public ui::View {
 	DialogStyle m_style{};
 
 	Ptr<OutlineQuad> m_background{};
-	Ptr<Text> m_content_text{};
+	Ptr<TextWrap> m_content_text{};
 	std::array<Ptr<ui::Button>, 2> m_footer_buttons{};
 };
 } // namespace bave::ui

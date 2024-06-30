@@ -2,7 +2,7 @@
 #include <bave/ui/dialog.hpp>
 
 namespace bave::ui {
-Dialog::Dialog(Services const& services, CreateInfo create_info) : View(services), m_style(services.get<Styles>().dialogs["default"]) {
+Dialog::Dialog(Services const& services, CreateInfo create_info) : m_style(services.get<Styles>().dialogs["default"]) {
 	auto main_button = std::make_unique<Button>(services);
 	auto const footer_height = main_button->get_size().y + m_style.footer_padding.y;
 	auto const footer_position = glm::vec2{0.0f, -0.5f * (create_info.size.y - footer_height)};
@@ -14,7 +14,7 @@ Dialog::Dialog(Services const& services, CreateInfo create_info) : View(services
 	background->set_corner_ratio(0.25f);
 	push(std::move(background));
 
-	auto content_text = std::make_unique<Text>(services);
+	auto content_text = std::make_unique<TextWrap>(services);
 	content_text->text.set_string(std::move(create_info.content_text));
 	content_text->text.set_height(text_height_v);
 	content_text->text.tint = m_style.content_text_tint;

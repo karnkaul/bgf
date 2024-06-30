@@ -1,20 +1,18 @@
 #pragma once
 #include <bave/graphics/drawable.hpp>
 #include <bave/services/display.hpp>
-#include <bave/services/services.hpp>
 #include <bave/ui/outline_quad.hpp>
 #include <bave/ui/widget.hpp>
 
 namespace bave::ui {
 enum class ListBoxDir : int { eHorz, eVert };
 
-// Important: does not use owning View's RenderView but Display's UI view.
 template <std::derived_from<IElement> Type>
 class ListBox : public IWidget {
   public:
 	using Dir = ListBoxDir;
 
-	explicit ListBox(Services const& services, Dir dir = Dir::eHorz) : m_ui_space(&services.get<Display>().ui), m_dir(dir) {}
+	explicit ListBox(Dir dir = Dir::eHorz) : m_dir(dir) {}
 
 	void push_back(Type item) {
 		m_items.push_back(std::move(item));
@@ -53,7 +51,7 @@ class ListBox : public IWidget {
 	void on_move(PointerMove const& pointer_move) override {
 		if (m_drag_pos) {
 			auto const delta = pointer_move.pointer.position - *m_drag_pos;
-			shift_items(m_ui_space->project(delta));
+			shift_items(delta);
 			m_drag_pos = pointer_move.pointer.position;
 			m_dragging = true;
 			return;
@@ -68,9 +66,7 @@ class ListBox : public IWidget {
 		if (pointer_tap.pointer.id == PointerId::ePrimary && pointer_tap.button == MouseButton::eLeft) {
 			switch (pointer_tap.action) {
 			case Action::ePress: {
-				if (background.get_background().get_bounds().contains(m_ui_space->unproject(pointer_tap.pointer.position))) {
-					m_drag_pos = pointer_tap.pointer.position;
-				}
+				if (background.get_background().get_bounds().contains(pointer_tap.pointer.position)) { m_drag_pos = pointer_tap.pointer.position; }
 				break;
 			}
 			case Action::eRelease: {
@@ -97,7 +93,7 @@ class ListBox : public IWidget {
 		background.draw(shader);
 		auto const& collect_bg = background.get_background();
 		auto const collect_rect = Rect<>::from_size(collect_bg.get_shape().size, collect_bg.transform.position);
-		auto render_view = m_ui_space->render_view;
+		auto render_view = shader.get_render_view();
 		render_view.n_scissor = render_view.to_n_scissor(collect_rect);
 		shader.set_render_view(render_view);
 		for (auto const& item : m_items) { item.draw(shader); }
@@ -191,7 +187,6 @@ class ListBox : public IWidget {
 		}
 	}
 
-	NotNull<VectorSpace const*> m_ui_space;
 	Dir m_dir;
 
 	std::vector<Type> m_items{};

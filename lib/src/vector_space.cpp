@@ -13,11 +13,7 @@ auto VectorSpace::get_viewport_scaler() const -> ExtentScaler { return get_rende
 
 auto VectorSpace::project(glm::vec2 const fb_point) const -> glm::vec2 { return get_render_device().project_to(render_view.viewport, fb_point); }
 
-auto VectorSpace::unproject(RenderView const& render_view, glm::vec2 const pointer) const -> glm::vec2 {
-	auto const fb_size = get_framebuffer_size();
-	if (!is_positive(pointer) || !is_positive(fb_size)) { return pointer; }
-	return render_view.unproject(pointer / fb_size);
-}
+auto VectorSpace::unproject(glm::vec2 const pointer) const -> glm::vec2 { return get_render_device().unproject_to(render_view, pointer); }
 
 void VectorSpace::sync_to_default_view() { render_view = get_render_device().get_default_view(); }
 } // namespace bave
